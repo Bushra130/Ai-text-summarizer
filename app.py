@@ -10,6 +10,17 @@ st.set_page_config(
     page_icon="📝",
     layout="centered"
 )
+# Hide Streamlit header, footer, and author/profile badge
+hide_all_badges = """
+<style>
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+div[class*="viewerBadge"] {display: none !important;}
+div[data-testid="stViewerBadge"] {display: none !important;}
+</style>
+"""
+st.markdown(hide_all_badges, unsafe_allow_html=True)
 
 st.title("📝 AI Text Summarization Tool")
 st.write("Summarize text and documents using Artificial Intelligence.")

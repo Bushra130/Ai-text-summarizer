@@ -18,8 +18,9 @@ st.write("Summarize text and documents using Artificial Intelligence.")
 @st.cache_resource
 def load_model():
     return pipeline(
-        "summarization",
-        model="facebook/bart-large-cnn"
+        task="summarization",
+        model="facebook/bart-large-cnn",
+        framework="pt"
     )
 
 

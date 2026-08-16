@@ -78,7 +78,7 @@ elif input_method == "📄 Upload PDF":
 
     uploaded_file = st.file_uploader(
         "Upload a PDF file:",
-        type=["pdf"]
+        type=["pdf","PDF"]
     )
 
     if uploaded_file is not None:
@@ -123,7 +123,7 @@ elif input_method == "📘 Upload DOCX":
 
     uploaded_file = st.file_uploader(
         "Upload a DOCX file:",
-        type=["docx"]
+        type=["docx", "DOCX", "doc", "DOC"]
     )
 
     if uploaded_file is not None:
@@ -169,7 +169,7 @@ elif input_method == "📃 Upload TXT":
 
     uploaded_file = st.file_uploader(
         "Upload a TXT file:",
-        type=["txt"]
+        type=["txt","TXT"]
     )
 
     if uploaded_file is not None:

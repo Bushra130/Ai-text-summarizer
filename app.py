@@ -10,14 +10,29 @@ st.set_page_config(
     page_icon="📝",
     layout="centered"
 )
-# Hide Streamlit header, footer, and author/profile badge
+# Hide Streamlit header, footer, and Community Cloud author/profile cards
 hide_all_badges = """
 <style>
+/* Hide standard Streamlit header and footer */
 #MainMenu {visibility: hidden;}
 header {visibility: hidden;}
 footer {visibility: hidden;}
-div[class*="viewerBadge"] {display: none !important;}
-div[data-testid="stViewerBadge"] {display: none !important;}
+div[data-testid="stToolbar"] {visibility: hidden; display: none !important;}
+div[data-testid="stDecoration"] {visibility: hidden; display: none !important;}
+div[data-testid="stStatusWidget"] {visibility: hidden; display: none !important;}
+
+/* Hide Streamlit Community Cloud profile and author badges */
+.viewerBadge_container__1QSob,
+.styles_viewerBadge__1yB5_,
+.viewerBadge_link__1S137,
+.viewerBadge_text__1JaDK,
+[class*="viewerBadge"],
+[class*="profileBadge"],
+[class*="authorBadge"],
+div[data-testid="stViewerBadge"] {
+    display: none !important;
+    visibility: hidden !important;
+}
 </style>
 """
 st.markdown(hide_all_badges, unsafe_allow_html=True)

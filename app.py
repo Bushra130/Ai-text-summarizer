@@ -10,6 +10,7 @@ st.set_page_config(
     page_icon="📝",
     layout="centered"
 )
+
 # Hide Streamlit header, footer, and Community Cloud author/profile cards
 hide_all_badges = """
 <style>
@@ -64,7 +65,6 @@ text = ""
 # ---------------- TEXT INPUT ----------------
 
 if input_method == "📝 Enter Text":
-
     text = st.text_area(
         "Enter your text:",
         height=250,
@@ -75,128 +75,73 @@ if input_method == "📝 Enter Text":
 # ---------------- PDF INPUT ----------------
 
 elif input_method == "📄 Upload PDF":
-
     uploaded_file = st.file_uploader(
         "Upload a PDF file:",
-        type=["pdf","PDF"]
+        type=["pdf", "PDF"]
     )
 
     if uploaded_file is not None:
-
         try:
             reader = PdfReader(uploaded_file)
-
             for page in reader.pages:
                 page_text = page.extract_text()
-
                 if page_text:
                     text += page_text + "\n"
 
             if text.strip():
-
-                st.success(
-                    f"✅ PDF loaded successfully! "
-                    f"({len(reader.pages)} pages)"
-                )
-
-                st.text_area(
-                    "Extracted Text:",
-                    value=text,
-                    height=200,
-                    disabled=True
-                )
-
+                st.success(f"✅ PDF loaded successfully! ({len(reader.pages)} pages)")
+                st.text_area("Extracted Text:", value=text, height=200, disabled=True)
             else:
-
-                st.warning(
-                    "⚠️ No readable text was found in this PDF."
-                )
-
+                st.warning("⚠️ No readable text was found in this PDF.")
         except Exception:
-
             st.error("❌ Could not read this PDF.")
 
 
 # ---------------- DOCX INPUT ----------------
 
 elif input_method == "📘 Upload DOCX":
-
     uploaded_file = st.file_uploader(
         "Upload a DOCX file:",
         type=["docx", "DOCX", "doc", "DOC"]
     )
 
     if uploaded_file is not None:
-
         try:
-
             document = Document(uploaded_file)
-
             paragraphs = []
-
             for paragraph in document.paragraphs:
-
                 if paragraph.text.strip():
                     paragraphs.append(paragraph.text)
 
             text = "\n".join(paragraphs)
 
             if text.strip():
-
                 st.success("✅ DOCX loaded successfully!")
-
-                st.text_area(
-                    "Extracted Text:",
-                    value=text,
-                    height=200,
-                    disabled=True
-                )
-
+                st.text_area("Extracted Text:", value=text, height=200, disabled=True)
             else:
-
-                st.warning(
-                    "⚠️ No readable text was found in this DOCX."
-                )
-
+                st.warning("⚠️ No readable text was found in this DOCX.")
         except Exception:
-
             st.error("❌ Could not read this DOCX.")
 
 
 # ---------------- TXT INPUT ----------------
 
 elif input_method == "📃 Upload TXT":
-
     uploaded_file = st.file_uploader(
         "Upload a TXT file:",
-        type=["txt","TXT"]
+        type=["txt", "TXT"]
     )
 
     if uploaded_file is not None:
-
         try:
-
             text = uploaded_file.read().decode("utf-8")
 
             if text.strip():
-
                 st.success("✅ TXT file loaded successfully!")
-
-                st.text_area(
-                    "File Content:",
-                    value=text,
-                    height=200,
-                    disabled=True
-                )
-
+                st.text_area("File Content:", value=text, height=200, disabled=True)
             else:
-
-                st.warning(
-                    "⚠️ The TXT file is empty."
-                )
-
+                st.warning("⚠️ The TXT file is empty.")
         except Exception:
-
             st.error("❌ Could not read this TXT file.")
 
 
@@ -208,17 +153,12 @@ summary_length = st.selectbox(
 )
 
 if summary_length == "Short":
-
     min_len = 30
     max_len = 60
-
 elif summary_length == "Medium":
-
     min_len = 70
     max_len = 110
-
 else:
-
     min_len = 120
     max_len = 160
 
@@ -226,47 +166,44 @@ else:
 # ---------------- SUMMARIZE ----------------
 
 if st.button("✨ Summarize"):
-
     if not text.strip():
-
-        st.warning(
-            "⚠️ Please enter text or upload a document first."
-        )
-
+        st.warning("⚠️ Please enter text or upload a document first.")
     elif len(text.split()) < 30:
-
-        st.warning(
-            "⚠️ Please provide at least 30 words "
-            "for better summarization."
-        )
-
+        st.warning("⚠️ Please provide at least 30 words for better summarization.")
     else:
+        # Pre-process text to remove fragmented PDF linebreaks
+        cleaned_text = " ".join(text.split())
 
         with st.spinner("🤖 Generating your summary..."):
-
             summary = summarizer(
-                text,
+                cleaned_text,
                 max_length=max_len,
                 min_length=min_len,
+                truncation=True,
                 do_sample=False
             )[0]["summary_text"]
 
-        original_words = len(text.split())
-
+        original_words = len(cleaned_text.split())
         summary_words = len(summary.split())
-
-        reduction = (
-            (original_words - summary_words)
-            / original_words
-        ) * 100
+        reduction = ((original_words - summary_words) / original_words) * 100
 
         st.subheader("📌 Summary")
 
-        st.text_area(
-            "Generated Summary",
-            value=summary,
-            height=180,
-            disabled=True
+        # Crisp, high-contrast summary display
+        st.markdown(
+            f"""
+            <div style="
+                background-color: rgba(128, 128, 128, 0.1); 
+                padding: 16px 20px; 
+                border-radius: 8px; 
+                border-left: 5px solid #ff4b4b; 
+                font-size: 16px; 
+                line-height: 1.6;
+                margin-bottom: 15px;">
+                {summary}
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
         # Copy button
@@ -275,7 +212,7 @@ if st.button("✨ Summarize"):
             <button onclick="copySummary()"
                 style="
                     padding: 10px 20px;
-                    font-size: 16px;
+                    font-size: 15px;
                     border-radius: 8px;
                     border: 1px solid #555;
                     background-color: #262730;
@@ -288,7 +225,6 @@ if st.button("✨ Summarize"):
             <script>
             function copySummary() {{
                 const text = {summary!r};
-
                 navigator.clipboard.writeText(text).then(function() {{
                     alert("Summary copied to clipboard!");
                 }});
@@ -300,13 +236,10 @@ if st.button("✨ Summarize"):
 
         # Statistics
         col1, col2, col3 = st.columns(3)
-
         with col1:
             st.metric("Original Words", original_words)
-
         with col2:
             st.metric("Summary Words", summary_words)
-
         with col3:
             st.metric("Reduction", f"{reduction:.1f}%")
 
@@ -317,22 +250,15 @@ if st.button("✨ Summarize"):
             dedupLim=0.95,
             top=8
         )
-
-        keywords = kw_extractor.extract_keywords(text)
+        keywords = kw_extractor.extract_keywords(cleaned_text)
 
         st.subheader("🧠 Key Topics")
-
-        keyword_text = " • ".join(
-            [keyword for keyword, score in keywords]
-        )
-
+        keyword_text = " • ".join([keyword for keyword, score in keywords])
         st.info(keyword_text)
-        
+
         st.success("✅ Summary generated successfully!")
 
 
 st.divider()
 
-st.caption(
-    "Powered by AI • BART (facebook/bart-large-cnn) • Built with Streamlit"
-)
+st.caption("Powered by AI • BART (facebook/bart-large-cnn) • Built with Streamlit")
